@@ -10,7 +10,7 @@ function VideoPlayer() {
     setLastPlayPauseTime(Date.now());
   }
 
-  const videoUrl = 'https://s3.amazonaws.com/my-bucket/my-video.mp4';
+  const videoUrl = 'https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4';
 
   useEffect(() => {
     if (textTrackRef.current) {
