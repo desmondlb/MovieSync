@@ -1,48 +1,41 @@
-import React, { useState, useRef, useEffect } from 'react';
 
-function VideoPlayer() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [lastPlayPauseTime, setLastPlayPauseTime] = useState(null);
-  const textTrackRef = useRef(null);
+//https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4
+import React, { useRef, useState } from 'react';
+import ReactPlayer from 'react-player';
 
-  function handlePlayPause() {
-    setIsPlaying(!isPlaying);
-    setLastPlayPauseTime(Date.now());
-  }
+const VideoPlayer = ({ videoId }) => {
+  const [isReady, setIsReady] = useState(false);
+  const playerRef = useRef(null);
 
-  const videoUrl = 'https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4';
-
-  useEffect(() => {
-    if (textTrackRef.current) {
-      const textTrack = textTrackRef.current.track;
-      textTrack.mode = 'showing';
-      const cue = new VTTCue(0, 0, '');
-      textTrack.addCue(cue);
-      textTrack.addEventListener('cuechange', handleCueChange);
+  const handlePlay = (startTime) => {
+    // Check if the player is ready before calling the play method
+    if (isReady) {
+      playerRef.current.seekTo(startTime);
+      // playerRef.current.play();
     }
-  }, []);
+  };
 
-  function handleCueChange() {
-    const cue = textTrackRef.current.track.activeCues[0];
-    if (cue) {
-      const timestamp = cue.text;
-      console.log(`User clicked play/pause at ${timestamp}`);
-    }
-  }
+  const handleReady = () => {
+    // Set isReady to true when the player is ready
+    setIsReady(true);
+  };
 
   return (
     <div>
-      <video src={videoUrl} controls={true} autoPlay={isPlaying}>
-        <track
-          ref={textTrackRef}
-          kind="metadata"
-          srcLang="en"
-          label="Timestamps"
-        />
-      </video>
-      <button onClick={handlePlayPause}>{isPlaying ? 'Pause' : 'Play'}</button>
+      <ReactPlayer
+        url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/${videoId}.mp4`}
+        controls={true}
+        ref={playerRef}
+        onReady={handleReady}
+      />
+      <div>
+        <button onClick={() => handlePlay(10)}>Play from 10 seconds</button>
+        <button onClick={() => handlePlay(30)}>Play from 30 seconds</button>
+        <button onClick={() => handlePlay(60)}>Play from 60 seconds</button>
+      </div>
     </div>
   );
-}
+};
 
 export default VideoPlayer;
+
