@@ -21,7 +21,7 @@ const VideoPlayer = ({ videoId }) => {
         resumeTime = pausedAt !== null ? pausedAt : startTime;
       }
       playerRef.current.seekTo(resumeTime);
-      console.log("Video playing from last paused stamp:",pausedAt);
+      console.log("Video playing from last paused stamp:",resumeTime);
       setPausedAt(null);
     }
     console.log(playerRef.current);
