@@ -3,23 +3,23 @@ const router = require('express').Router();
 var global = {};
 
 router.post('/create', (req, res) => {
-    const { roomName, roomCode, videoSize } = req.body
+    const { roomName, roomCode} = req.body
 
-    global[roomCode] = {"roomName":roomName, "videoSize": videoSize}
+    global[roomCode] = {"roomName":roomName}
 
-    res.send({message: "success"})
+    res.send({message: "success", roomName: roomName, roomCode: roomCode})
 });
 
 router.post('/join', (req, res) => {
     const { roomCode, videoSize } = req.body
     if(roomCode in global){
-        if(global[roomCode].videoSize != videoSize) {
-            res.send(
-                {
-                    message: "video is different than the host's video."
-                }
-            )
-        } else {
+        // if(global[roomCode].videoSize != videoSize) {
+        //     res.send(
+        //         {
+        //             message: "video is different than the host's video."
+        //         }
+        //     )
+        // } else {
             res.send(
                 {
                     roomCode,
@@ -28,7 +28,7 @@ router.post('/join', (req, res) => {
                     message: "success"
                 }
             )
-        }
+        // }
     } else {
         res.send(
             {
