@@ -51,7 +51,7 @@ const SocketComponent = () => {
 
                 // Check if the player is ready before calling the play method
                 console.log("HandlePlay start time: ",data.context)
-                if (isReady) {
+                // if (isReady) {
                     let resumeTime;
                     if (!isPlaying && isFinite(data.context)) {
                         resumeTime = data.context;
@@ -61,10 +61,11 @@ const SocketComponent = () => {
                         resumeTime = pausedAt !== null ? pausedAt : data.context;
                     }
                     playerRef.current.seekTo(resumeTime);
-                    console.log("Video playing from last paused stamp:",pausedAt);
+                    console.log("Video psdfdffbsdfjnfkjsdnfieuwfiue:",pausedAt);
                     setPausedAt(null);
                     allowEmit = false;
-                }
+                    setIsPlaying(true);
+                // }
                 console.log(playerRef.current);
             }
             if(data.message == "pause") {
@@ -179,7 +180,7 @@ const SocketComponent = () => {
           setPausedAt(null);
         }
         console.log(playerRef.current);
-
+        setIsPlaying(true);
         if(allowEmit == true){
             console.log("Trying to send the message to server")
             console.log(socket);
@@ -220,7 +221,7 @@ const SocketComponent = () => {
           url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4`}
           controls={true}
           ref={playerRef}
-          playing={false}
+          playing={isPlaying}
           muted={true}
           onReady={handleReady}
           onPause={handlePause}
