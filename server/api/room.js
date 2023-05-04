@@ -11,7 +11,7 @@ router.post('/create', (req, res) => {
 });
 
 router.post('/join', (req, res) => {
-    const { roomCode, videoSize } = req.body
+    const { roomCode } = req.body;
     if(roomCode in global){
         // if(global[roomCode].videoSize != videoSize) {
         //     res.send(
@@ -23,7 +23,6 @@ router.post('/join', (req, res) => {
             res.send(
                 {
                     roomCode,
-                    videoSize,
                     roomName: global[roomCode].roomName,
                     message: "success"
                 }

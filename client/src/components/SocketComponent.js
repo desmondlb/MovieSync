@@ -89,7 +89,7 @@ const SocketComponent = () => {
         
         if(!("roomCode" in location.state)){ 
             // Indicates create a new room
-
+            setRoomCode();
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
 
@@ -121,14 +121,14 @@ const SocketComponent = () => {
 
         } else {
             // Indicates join a room
-            setRoomCode(location.state.roomCode);
+            
 
             // Find the room name
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
 
             var raw = JSON.stringify({
-                "roomCode": roomCode
+                "roomCode": location.state.roomCode
             });
 
             var requestOptions = {
@@ -144,8 +144,9 @@ const SocketComponent = () => {
                 if(resp.message != "success") {
                     document.getElementById("joinRoomText").innerHTML = resp.message
                 } else {
+                    socket.emit('new-user-joined', { name: location.state.userName, roomCode: resp.roomCode })
+                    setRoomCode(resp.roomCode);
                     setRoomName(resp.roomName);
-                    socket.emit('new-user-joined', { name: userName, roomCode: roomCode })
                 }   
             })
             .catch(error => console.log('error', error));

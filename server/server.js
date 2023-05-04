@@ -30,8 +30,10 @@ app.use('/room', require('./api/room'))
 const users = {};
 
 io.on('connection', socket=>{
+    // console.log(socket.id);
     socket.on('new-user-joined', data => {
         users[socket.id] = {name: data.userName, roomCode: data.roomCode}; 
+        // console.log(socket.id);
         socket.join(data.roomCode);
         let newUsers = {}
         for (const [key, value] of Object.entries(users)) {
@@ -54,7 +56,8 @@ io.on('connection', socket=>{
         socket.disconnect(true);
     })
 
-    socket.on('playerControl', data => { 
-        socket.to(data.roomCode).emit('playerControlUpdate', {message: data.message, context: data.context, username: users[socket.id].userName})
+    socket.on('playerControl', data => {
+        // console.log(socket.id);
+        socket.to(data.roomCode).emit('playerControlUpdate', {message: data.message, context: data.context})
     })
 })
