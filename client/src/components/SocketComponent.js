@@ -18,6 +18,13 @@ const SocketComponent = () => {
     const [isReady, setIsReady] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [pausedAt, setPausedAt] = useState(null);
+    const [lastFrameTime, setLastFrameTime] = useState(null);
+    const [frameDropRate, setFrameDropRate] = useState(null);
+    const [latency, setLatency] = useState(null); //TODO
+
+    
+
+    
     const playerRef = useRef(null);
     let allowEmit = true;
     const socket = io('http://localhost:5000', {
@@ -65,6 +72,8 @@ const SocketComponent = () => {
                     setPausedAt(null);
                     allowEmit = false;
                     setIsPlaying(true);
+                    setLastFrameTime(playerRef.current.getCurrentTime() * 1000);
+
                 // }
                 console.log(playerRef.current);
             }
@@ -189,32 +198,56 @@ const SocketComponent = () => {
         setTimeout(() => {
             allowEmit = true
         }, 500);
-
+              /*METRICS MONITORING */
+        playerRef.current.getInternalPlayer().addEventListener('loadedmetadata', () => {
+            console.log('Loaded metadata');
+            const videoElement = playerRef.current.getInternalPlayer();
+            console.log('Latency:', videoElement.currentTime - startTime);
+            setInterval(() => {
+            console.log('Frame drop:', videoElement.webkitDecodedFrameCount - videoElement.webkitDroppedFrameCount);
+            console.log('Bitrate:', videoElement.videoBitsPerSecond);
+            }, 1000);
+        });
       };
     
-      const handleReady = () => {
-        // Set isReady to true when the player is ready
-        // console.log('Player is ready');
-        setIsReady(true);
-      };
+    const handleReady = () => {
+    // Set isReady to true when the player is ready
+    // console.log('Player is ready');
+    setIsReady(true);
+    };
     
-      const handlePause = (e) => {
-        // Capture the pause time of the video
-        const pausedAt = playerRef.current.getCurrentTime();
-        setPausedAt(pausedAt);
-        setIsPlaying(false);
+    const handlePause = (e) => {
+    // Capture the pause time of the video
+    const pausedAt = playerRef.current.getCurrentTime();
+    setPausedAt(pausedAt);
+    setIsPlaying(false);
 
-        if(allowEmit == true){
-            console.log(`Video paused at ${pausedAt}`);    
-            socket.emit("playerControl", {message: "pause", context: pausedAt, roomCode: roomCode})
+    if(allowEmit == true){
+        console.log(`Video paused at ${pausedAt}`);    
+        socket.emit("playerControl", {message: "pause", context: pausedAt, roomCode: roomCode})
+    }
+    setTimeout(() => {
+        allowEmit = true
+    }, 500);
+    // TODO: Do something with the pause time, e.g. send it to a server
+    };
+
+    
+    const handleProgress = ({ playedSeconds }) => { //TODO: calculate the frame drop rate for each user metrics should look like (U1: droprate1,U2:droprate2, ....) - 
+        const currentFrameTime = playedSeconds * 1000;
+        if (lastFrameTime !== null) {
+        console.log("currentFrameTime :",currentFrameTime,"lastFrameTime :",lastFrameTime)
+        const timeDiff = currentFrameTime - lastFrameTime;
+        const expectedFrameTime = 1000 / 60; // the video is 30 fps 30 fps
+        const frameDropRate = timeDiff / expectedFrameTime - 1;
+        setFrameDropRate(frameDropRate);
+        console.log("frameDropRate",frameDropRate)
         }
-        setTimeout(() => {
-            allowEmit = true
-        }, 500);
-        // TODO: Do something with the pause time, e.g. send it to a server
-      };
+        setLastFrameTime(currentFrameTime);
+    };
 
-
+        
+        // ...
     return (
         <div>
         <ReactPlayer
@@ -226,6 +259,7 @@ const SocketComponent = () => {
           onReady={handleReady}
           onPause={handlePause}
           onPlay={handlePlay}
+          onProgress={handleProgress}
         />
         <p>{roomCode}</p>
         
