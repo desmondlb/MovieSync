@@ -75,6 +75,7 @@ const SocketComponent = () => {
                 const pausedAt = data.context;
                 console.log(`Video paused at ${pausedAt}`);
                 setPausedAt(pausedAt);
+                playerRef.current.seekTo(pausedAt);
                 setIsPlaying(false);
                 allowEmit = false;
             }
