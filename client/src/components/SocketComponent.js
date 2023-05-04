@@ -221,6 +221,7 @@ const SocketComponent = () => {
           controls={true}
           ref={playerRef}
           playing={false}
+          muted={true}
           onReady={handleReady}
           onPause={handlePause}
           onPlay={handlePlay}
