@@ -1,4 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useContext, useState, useEffect } from 'react';
+import { SocketContext } from '../context/socket';
 import { useLocation } from 'react-router-dom';
 import {io} from 'socket.io-client';
 // import VideoPlayer from '../../components/VideoPlayer';
@@ -27,18 +28,19 @@ const SocketComponent = () => {
     
     const playerRef = useRef(null);
     let allowEmit = true;
-    const socket = io('http://localhost:5000', {
-        autoConnect: true
-      }); // replace with your server URL
+    const socket = useContext(SocketContext);
+    // const socket = io('http://localhost:5000', {
+    //     autoConnect: true
+    //   }); // replace with your server URL
     
     
     const location = useLocation();
 
     useEffect(() => {
-        socket.connect();
-        socket.on('connect', () => {
-        console.log('Socket connected');
-        });
+        // socket.connect();
+        // socket.on('connect', () => {
+        // console.log('Socket connected');
+        // });
         socket.on('user-joined', (data) => {
             if(data.roomCode == roomCode){
                 console.log("User joineddddd");

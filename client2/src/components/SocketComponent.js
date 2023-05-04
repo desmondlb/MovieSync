@@ -21,12 +21,11 @@ const SocketComponent = () => {
     const playerRef = useRef(null);
     let allowEmit = true;
     const socket = io('http://localhost:5000', {
-        autoConnect: false
+        autoConnect: true
       }); // replace with your server URL
     
     
     const location = useLocation();
-    // console.log(location.state)
 
     useEffect(() => {
         socket.connect();
@@ -52,7 +51,7 @@ const SocketComponent = () => {
 
                 // Check if the player is ready before calling the play method
                 console.log("HandlePlay start time: ",data.context)
-                if (isReady) {
+                // if (isReady) {
                     let resumeTime;
                     if (!isPlaying && isFinite(data.context)) {
                         resumeTime = data.context;
@@ -62,10 +61,11 @@ const SocketComponent = () => {
                         resumeTime = pausedAt !== null ? pausedAt : data.context;
                     }
                     playerRef.current.seekTo(resumeTime);
-                    console.log("Video playing from last paused stamp:",pausedAt);
+                    console.log("Video psdfdffbsdfjnfkjsdnfieuwfiue:",pausedAt);
                     setPausedAt(null);
                     allowEmit = false;
-                }
+                    setIsPlaying(true);
+                // }
                 console.log(playerRef.current);
             }
             if(data.message == "pause") {
@@ -76,6 +76,7 @@ const SocketComponent = () => {
                 const pausedAt = data.context;
                 console.log(`Video paused at ${pausedAt}`);
                 setPausedAt(pausedAt);
+                playerRef.current.seekTo(pausedAt);
                 setIsPlaying(false);
                 allowEmit = false;
             }
@@ -88,17 +89,15 @@ const SocketComponent = () => {
         // };
         setUserName(location.state.userName);
         
-        if(!("roomCode" in location.state)){
+        if(!("roomCode" in location.state)){ 
             // Indicates create a new room
-            setRoomCode(randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'));
-            setRoomName(location.state.roomName);
-
+            setRoomCode();
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
 
             var raw = JSON.stringify({
-                "roomName": roomName,
-                "roomCode": roomCode
+                "roomName": location.state.roomName,
+                "roomCode": randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
             });
 
             var requestOptions = {
@@ -112,7 +111,11 @@ const SocketComponent = () => {
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message == "success") {
-                    socket.emit('new-user-joined', { name: userName, roomCode: roomCode })
+                    socket.emit('new-user-joined', { userName: location.state.userName, roomCode: resp.roomCode });
+                    setRoomCode(resp.roomCode);
+                    setRoomName(resp.roomName);
+                    setUserName(location.state.userName);
+
                 }
             })
             .catch(error => console.log('error', error));
@@ -120,14 +123,14 @@ const SocketComponent = () => {
 
         } else {
             // Indicates join a room
-            setRoomCode(location.state.roomCode);
+            
 
             // Find the room name
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
 
             var raw = JSON.stringify({
-                "roomCode": roomCode
+                "roomCode": location.state.roomCode
             });
 
             var requestOptions = {
@@ -143,8 +146,9 @@ const SocketComponent = () => {
                 if(resp.message != "success") {
                     document.getElementById("joinRoomText").innerHTML = resp.message
                 } else {
+                    socket.emit('new-user-joined', { name: location.state.userName, roomCode: resp.roomCode })
+                    setRoomCode(resp.roomCode);
                     setRoomName(resp.roomName);
-                    socket.emit('new-user-joined', { name: userName, roomCode: roomCode })
                 }   
             })
             .catch(error => console.log('error', error));
@@ -161,7 +165,7 @@ const SocketComponent = () => {
     const handlePlay = () => {
         // Check if the player is ready before calling the play method
         let startTime = playerRef.current.getCurrentTime();
-        console.log("HandlePlay start time: ",startTime)
+        // console.log("HandlePlay start time: ",startTime)
         if (isReady) {
           let resumeTime;
           if (!isPlaying && isFinite(startTime)) {
@@ -172,14 +176,14 @@ const SocketComponent = () => {
             resumeTime = pausedAt !== null ? pausedAt : startTime;
           }
           playerRef.current.seekTo(resumeTime);
-          console.log("Video playing from last paused stamp:",pausedAt);
+        //   console.log("Video playing from last paused stamp:",pausedAt);
           setPausedAt(null);
         }
         console.log(playerRef.current);
-
+        setIsPlaying(true);
         if(allowEmit == true){
-            // socket.connect();
             console.log("Trying to send the message to server")
+            console.log(socket);
             socket.emit("playerControl", {message: "play", context: startTime, roomCode: roomCode}) 
         } 
         setTimeout(() => {
@@ -197,12 +201,11 @@ const SocketComponent = () => {
       const handlePause = (e) => {
         // Capture the pause time of the video
         const pausedAt = playerRef.current.getCurrentTime();
-        // console.log(`Video paused at ${pausedAt}`);
         setPausedAt(pausedAt);
         setIsPlaying(false);
 
         if(allowEmit == true){
-            
+            console.log(`Video paused at ${pausedAt}`);    
             socket.emit("playerControl", {message: "pause", context: pausedAt, roomCode: roomCode})
         }
         setTimeout(() => {
@@ -218,7 +221,8 @@ const SocketComponent = () => {
           url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4`}
           controls={true}
           ref={playerRef}
-          playing={true}
+          playing={isPlaying}
+          muted={true}
           onReady={handleReady}
           onPause={handlePause}
           onPlay={handlePlay}
