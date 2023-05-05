@@ -157,7 +157,47 @@ const SocketComponent = () => {
         
 
     // }, []);
+    const saveLogData = (action) => {
+        const now = new Date();
+        const utcTimestamp = Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        now.getUTCMinutes(),
+        now.getUTCSeconds(),
+        now.getUTCMilliseconds()
+        );
 
+        fetch('http://localhost:3002/log', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            roomCode: roomCode,
+            userName: userName,
+            action: action,
+            timeStamp: new Date(utcTimestamp).toISOString()
+          })
+        })
+        .then(response => {
+            if (response.status === 200) {
+              // Success: log data saved successfully
+              console.log('Log data saved successfully');
+            } else if (response.status === 500) {
+              // Server error: error writing to log file
+              console.error('Error writing to log file');
+            } else {
+              // Other error: network response was not ok
+              throw new Error('Network response was not ok');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+      
 
     const handlePlay = () => {
         // Check if the player is ready before calling the play method
@@ -178,7 +218,8 @@ const SocketComponent = () => {
         setIsPlaying(true);
         if(allowEmit == true){
             console.log(socket);
-            socket.emit("playerControl", {message: "play", context: startTime, roomCode: roomCode}) 
+            socket.emit("playerControl", {message: "play", context: startTime, roomCode: roomCode});
+            saveLogData("play");
         } 
         setTimeout(() => {
             allowEmit = true
@@ -208,7 +249,8 @@ const SocketComponent = () => {
 
         if(allowEmit == true){
             console.log(`Video paused at ${pausedAt}`);    
-            socket.emit("playerControl", {message: "pause", context: pausedAt, roomCode: roomCode})
+            socket.emit("playerControl", {message: "pause", context: pausedAt, roomCode: roomCode});
+            saveLogData("pause");
         }
         setTimeout(() => {
             allowEmit = true
@@ -234,7 +276,7 @@ const SocketComponent = () => {
     return (
         <div>
             <ReactPlayer
-            url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4`}
+            url={`https://dash.akamaized.net/dash264/TestCasesIOP33/adapatationSetSwitching/5/manifest.mpd`}
             controls={true}
             ref={playerRef}
             playing={isPlaying}
