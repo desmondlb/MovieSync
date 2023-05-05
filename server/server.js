@@ -67,4 +67,9 @@ io.on('connection', socket=>{
         // console.log(socket.id);
         socket.to(data.roomCode).emit('playerControlUpdate', {message: data.message, context: data.context})
     })
+
+    socket.on('deleteRoom', data => {
+        // console.log(socket.id);
+        socket.to(data.roomCode).emit('deleteRoomUpdate', {message: data.message, roomCode: data.roomCode})
+    })
 })

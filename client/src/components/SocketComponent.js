@@ -81,6 +81,11 @@ const SocketComponent = () => {
         socket.on('left', (data) => {
             setPeopleInParty(data.members);
         });
+        socket.on('deleteRoomUpdate', (data) => {
+            setIsPlaying(false);
+            setRoomCode("");
+            setPeopleInParty(0);
+        });
         // return () => {
         // socket.disconnect();
         // };
@@ -104,7 +109,7 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://localhost:5000/room/create", requestOptions)
+            fetch("http://3.91.52.183:5000/room/create", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message == "success") {
@@ -138,7 +143,7 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://localhost:5000/room/join", requestOptions)
+            fetch("http://3.91.52.183:5000/room/join", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message != "success") {
@@ -274,18 +279,25 @@ const SocketComponent = () => {
     };
 
     const handleClick = async () => {
-        try {
-          const response = await fetch('http://localhost:5000/room/close-room', {
+          const response = await fetch('http://3.91.52.183:5000/room/close-room', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({ roomCode: roomCode })
-          });
-          const data = await response.json();
-        } catch (error) {
-          console.error('Error closing group:', error);
-        }
+          }).then(response => {
+            if (response.status === 200) {
+              // Success: room deleted
+              console.log('Room deleted');
+              socket.emit("deleteRoom", {message: "delete", roomCode: roomCode});
+            } else {
+              // Other error: network response was not ok
+              throw new Error('Network response was not ok');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          })
       };
 
         
