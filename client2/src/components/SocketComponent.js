@@ -2,9 +2,9 @@ import React, { useRef, useContext, useState, useEffect } from 'react';
 import { SocketContext } from '../context/socket';
 import { useLocation } from 'react-router-dom';
 import {io} from 'socket.io-client';
-import VideoPlayer from './VideoPlayer';
+// import VideoPlayer from '../../components/VideoPlayer';
 import ReactPlayer from 'react-player';
-import dashjs from 'dashjs';
+
 
 function randomString(length, chars) {
     var result = '';
@@ -18,7 +18,7 @@ const SocketComponent = () => {
     const [userName, setUserName] = useState("");
     const [roomName, setRoomName] = useState("");
     const [isReady, setIsReady] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
     const [pausedAt, setPausedAt] = useState(null);
     const [lastFrameTime, setLastFrameTime] = useState(null);
     const [frameDropRate, setFrameDropRate] = useState(null);
@@ -151,10 +151,6 @@ const SocketComponent = () => {
             })
             .catch(error => console.log('error', error));
         }
-
-        // const player = dashjs.MediaPlayer().create();
-        // player.initialize(videoRef.current, 'http://your-video-source-url.mpd', true);
-
     }, []);
 
 
@@ -238,17 +234,7 @@ const SocketComponent = () => {
         // ...
     return (
         <div>
-            <VideoPlayer 
-            url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/bbb_30fps_1024x576_2500k.mp4`} 
-            onReady={handleReady}
-            onPlay={handlePlay} 
-            onPause={handlePause} 
-            onProgress={handleProgress}
-            playerRef={playerRef}
-            playing={isPlaying}
-            />
-
-            {/* <ReactPlayer
+            <ReactPlayer
             url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4`}
             controls={true}
             ref={playerRef}
@@ -258,7 +244,7 @@ const SocketComponent = () => {
             onPause={handlePause}
             onPlay={handlePlay}
             onProgress={handleProgress}
-            /> */}
+            />
             <p>{roomCode}</p>
         
       </div>

@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import dashjs from 'dashjs';
 
 const VideoPlayer = ({ url, onReady, onPlay, onPause, onProgress, playerRef, playing}) => {
-  const videoRef = useRef(null);
+  const videoRef = useRef(playerRef);
 
   useEffect(() => {
     if (!playerRef.current) {
@@ -14,7 +14,7 @@ const VideoPlayer = ({ url, onReady, onPlay, onPause, onProgress, playerRef, pla
       playerRef.current.on('timeupdate', onProgress);
     }
 
-    playerRef.current.initialize(playerRef.current, url, playing);
+    playerRef.current.initialize(videoRef.current, url, playing);
 
 
     // if (playing) {
@@ -40,7 +40,7 @@ const VideoPlayer = ({ url, onReady, onPlay, onPause, onProgress, playerRef, pla
 
   return (
     <div>
-      <video ref={videoRef} controls={false}/>
+      <video ref={videoRef} controls={false} autoPlay={true}/>
     </div>
   );
 };
