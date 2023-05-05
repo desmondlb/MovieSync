@@ -43,7 +43,6 @@ const SocketComponent = () => {
         // });
         socket.on('user-joined', (data) => {
             if(data.roomCode == roomCode){
-                console.log("User joineddddd");
                 setPeopleInParty(data.members);
             }
         });
@@ -53,14 +52,8 @@ const SocketComponent = () => {
         socket.on('playerControlUpdate', (data) => {
             console.log("Got message from server");
             if(data.message == "play") {
-                // console.log(data)
-                // videoPlayer.currentTime = data.context
-                // allowEmit = false;
-                // videoPlayer.play()
 
                 // Check if the player is ready before calling the play method
-                console.log("HandlePlay start time: ",data.context)
-                // if (isReady) {
                     let resumeTime;
                     if (!isPlaying && isFinite(data.context)) {
                         resumeTime = data.context;
@@ -70,22 +63,15 @@ const SocketComponent = () => {
                         resumeTime = pausedAt !== null ? pausedAt : data.context;
                     }
                     playerRef.current.seekTo(resumeTime);
-                    console.log("Video psdfdffbsdfjnfkjsdnfieuwfiue:",pausedAt);
                     setPausedAt(null);
                     allowEmit = false;
                     setIsPlaying(true);
                     setLastFrameTime(playerRef.current.getCurrentTime() * 1000);
 
-                // }
                 console.log(playerRef.current);
             }
             if(data.message == "pause") {
-                // console.log(data)
-                // videoPlayer.currentTime = data.context
-                // allowEmit = false;
-                // videoPlayer.pause()
                 const pausedAt = data.context;
-                console.log(`Video paused at ${pausedAt}`);
                 setPausedAt(pausedAt);
                 playerRef.current.seekTo(pausedAt);
                 setIsPlaying(false);
@@ -176,7 +162,6 @@ const SocketComponent = () => {
     const handlePlay = () => {
         // Check if the player is ready before calling the play method
         let startTime = playerRef.current.getCurrentTime();
-        // console.log("HandlePlay start time: ",startTime)
         if (isReady) {
           let resumeTime;
           if (!isPlaying && isFinite(startTime)) {
@@ -187,13 +172,11 @@ const SocketComponent = () => {
             resumeTime = pausedAt !== null ? pausedAt : startTime;
           }
           playerRef.current.seekTo(resumeTime);
-        //   console.log("Video playing from last paused stamp:",pausedAt);
           setPausedAt(null);
         }
         console.log(playerRef.current);
         setIsPlaying(true);
         if(allowEmit == true){
-            console.log("Trying to send the message to server")
             console.log(socket);
             socket.emit("playerControl", {message: "play", context: startTime, roomCode: roomCode}) 
         } 
@@ -214,36 +197,34 @@ const SocketComponent = () => {
     
     const handleReady = () => {
     // Set isReady to true when the player is ready
-    // console.log('Player is ready');
-    setIsReady(true);
+        setIsReady(true);
     };
     
     const handlePause = (e) => {
     // Capture the pause time of the video
-    const pausedAt = playerRef.current.getCurrentTime();
-    setPausedAt(pausedAt);
-    setIsPlaying(false);
+        const pausedAt = playerRef.current.getCurrentTime();
+        setPausedAt(pausedAt);
+        setIsPlaying(false);
 
-    if(allowEmit == true){
-        console.log(`Video paused at ${pausedAt}`);    
-        socket.emit("playerControl", {message: "pause", context: pausedAt, roomCode: roomCode})
-    }
-    setTimeout(() => {
-        allowEmit = true
-    }, 500);
-    // TODO: Do something with the pause time, e.g. send it to a server
+        if(allowEmit == true){
+            console.log(`Video paused at ${pausedAt}`);    
+            socket.emit("playerControl", {message: "pause", context: pausedAt, roomCode: roomCode})
+        }
+        setTimeout(() => {
+            allowEmit = true
+        }, 500);
     };
 
     
     const handleProgress = ({ playedSeconds }) => { //TODO: calculate the frame drop rate for each user metrics should look like (U1: droprate1,U2:droprate2, ....) - 
         const currentFrameTime = playedSeconds * 1000;
         if (lastFrameTime !== null) {
-        console.log("currentFrameTime :",currentFrameTime,"lastFrameTime :",lastFrameTime)
-        const timeDiff = currentFrameTime - lastFrameTime;
-        const expectedFrameTime = 1000 / 60; // the video is 30 fps 30 fps
-        const frameDropRate = timeDiff / expectedFrameTime - 1;
-        setFrameDropRate(frameDropRate);
-        console.log("frameDropRate",frameDropRate)
+            console.log("currentFrameTime :",currentFrameTime,"lastFrameTime :",lastFrameTime)
+            const timeDiff = currentFrameTime - lastFrameTime;
+            const expectedFrameTime = 1000 / 60; // the video is 30 fps 30 fps
+            const frameDropRate = timeDiff / expectedFrameTime - 1;
+            setFrameDropRate(frameDropRate);
+            console.log("frameDropRate",frameDropRate)
         }
         setLastFrameTime(currentFrameTime);
     };
@@ -252,18 +233,18 @@ const SocketComponent = () => {
         // ...
     return (
         <div>
-        <ReactPlayer
-          url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4`}
-          controls={true}
-          ref={playerRef}
-          playing={isPlaying}
-          muted={true}
-          onReady={handleReady}
-          onPause={handlePause}
-          onPlay={handlePlay}
-          onProgress={handleProgress}
-        />
-        <p>{roomCode}</p>
+            <ReactPlayer
+            url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4`}
+            controls={true}
+            ref={playerRef}
+            playing={isPlaying}
+            muted={true}
+            onReady={handleReady}
+            onPause={handlePause}
+            onPlay={handlePlay}
+            onProgress={handleProgress}
+            />
+            <p>{roomCode}</p>
         
       </div>
     );
