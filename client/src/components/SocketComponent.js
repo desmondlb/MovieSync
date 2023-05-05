@@ -104,7 +104,7 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://localhost:5000/room/create", requestOptions)
+            fetch("http://3.91.52.183:5000/room/create", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message == "success") {
@@ -137,7 +137,7 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://localhost:5000/room/join", requestOptions)
+            fetch("http://3.91.52.183:5000/room/join", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message != "success") {
