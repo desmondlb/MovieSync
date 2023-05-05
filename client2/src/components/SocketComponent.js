@@ -18,7 +18,7 @@ const SocketComponent = () => {
     const [userName, setUserName] = useState("");
     const [roomName, setRoomName] = useState("");
     const [isReady, setIsReady] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(true);
     const [pausedAt, setPausedAt] = useState(null);
     const [lastFrameTime, setLastFrameTime] = useState(null);
     const [frameDropRate, setFrameDropRate] = useState(null);
@@ -239,7 +239,7 @@ const SocketComponent = () => {
     return (
         <div>
             <VideoPlayer 
-            url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/bbb_30fps.mpd`} 
+            url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/bbb_30fps_1024x576_2500k.mp4`} 
             onReady={handleReady}
             onPlay={handlePlay} 
             onPause={handlePause} 
@@ -247,6 +247,7 @@ const SocketComponent = () => {
             playerRef={playerRef}
             playing={isPlaying}
             />
+
             {/* <ReactPlayer
             url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/Jethalal_Plays_Football_720p.mp4`}
             controls={true}

@@ -14,7 +14,7 @@ const VideoPlayer = ({ url, onReady, onPlay, onPause, onProgress, playerRef, pla
       playerRef.current.on('timeupdate', onProgress);
     }
 
-    playerRef.current.initialize(videoRef.current, url, playing);
+    playerRef.current.initialize(playerRef.current, url, playing);
 
 
     // if (playing) {
@@ -40,7 +40,7 @@ const VideoPlayer = ({ url, onReady, onPlay, onPause, onProgress, playerRef, pla
 
   return (
     <div>
-      <video ref={videoRef} controls={false} pl/>
+      <video ref={videoRef} controls={false}/>
     </div>
   );
 };
