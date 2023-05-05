@@ -18,8 +18,28 @@ router.post('/create', (req, res) => {
         roomCode
     })
     newRoom.save()
-    res.send({message: "success"})
+    res.send({message: "success", roomName: roomName, roomCode: roomCode})
 });
+
+// Define a route for clearing the MongoDB collection
+router.post('/close-room', async (req, res) => {
+    try {
+        const { roomCode } = req.body
+        const deletedRoom = await Room.findOneAndDelete({ roomCode });
+        if (!deletedRoom) {
+          // If no matching document is found, send a 404 response
+          res.status(404).json({ error: 'Room not found' });
+          return;
+        }
+        // Send a success response
+        res.status(200).json({ message: 'Room deleted successfully' });
+      } catch (err) {
+        // Send an error response
+        console.error('Error deleting room:', err);
+        res.status(500).json({ error: err.message });
+      }
+    });
+ 
 
 router.post('/join', (req, res) => {
     const { roomCode } = req.body;

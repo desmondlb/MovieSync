@@ -1,6 +1,6 @@
 import React, { useRef, useContext, useState, useEffect } from 'react';
 import { SocketContext } from '../context/socket';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate} from 'react-router-dom';
 import {io} from 'socket.io-client';
 // import VideoPlayer from '../../components/VideoPlayer';
 import ReactPlayer from 'react-player';
@@ -22,6 +22,7 @@ const SocketComponent = () => {
     const [lastFrameTime, setLastFrameTime] = useState(null);
     const [frameDropRate, setFrameDropRate] = useState(null);
     const [latency, setLatency] = useState(null); //TODO
+    const navigate = useNavigate();
 
     
 
@@ -81,6 +82,12 @@ const SocketComponent = () => {
         socket.on('left', (data) => {
             setPeopleInParty(data.members);
         });
+        socket.on('deleteRoomUpdate', (data) => {
+            setIsPlaying(false);
+            setRoomCode("");
+            setPeopleInParty(0);
+            navigate(-1);
+        });
         // return () => {
         // socket.disconnect();
         // };
@@ -109,6 +116,7 @@ const SocketComponent = () => {
                 const resp = await result.json()
                 if(resp.message == "success") {
                     socket.emit('new-user-joined', { userName: location.state.userName, roomCode: resp.roomCode });
+                    console.log(resp);
                     setRoomCode(resp.roomCode);
                     setRoomName(resp.roomName);
                     setUserName(location.state.userName);
@@ -257,6 +265,7 @@ const SocketComponent = () => {
         }, 500);
     };
 
+
     
     const handleProgress = ({ playedSeconds }) => { //TODO: calculate the frame drop rate for each user metrics should look like (U1: droprate1,U2:droprate2, ....) - 
         const currentFrameTime = playedSeconds * 1000;
@@ -270,6 +279,29 @@ const SocketComponent = () => {
         }
         setLastFrameTime(currentFrameTime);
     };
+
+    const handleClick = async () => {
+          const response = await fetch('http://3.91.52.183:5000/room/close-room', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ roomCode: roomCode })
+          }).then(response => {
+            if (response.status === 200) {
+              // Success: room deleted
+              console.log('Room deleted');
+              socket.emit("deleteRoom", {message: "delete", roomCode: roomCode});
+              navigate(-1);
+            } else {
+              // Other error: network response was not ok
+              throw new Error('Network response was not ok');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          })
+      };
 
         
         // ...
@@ -287,6 +319,9 @@ const SocketComponent = () => {
             onProgress={handleProgress}
             />
             <p>{roomCode}</p>
+            <button onClick={handleClick}>
+            {'Close Group'}
+            </button>
         
       </div>
     );
