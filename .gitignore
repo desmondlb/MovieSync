@@ -1,3 +1,4 @@
+/assets
 analysis_server/node_modules/.package-lock.json
 analysis_server/node_modules/.bin/mime
 analysis_server/node_modules/accepts/HISTORY.md
