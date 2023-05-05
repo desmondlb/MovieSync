@@ -104,11 +104,12 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://3.91.52.183:5000/room/create", requestOptions)
+            fetch("http://localhost:5000/room/create", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message == "success") {
                     socket.emit('new-user-joined', { userName: location.state.userName, roomCode: resp.roomCode });
+                    console.log(resp);
                     setRoomCode(resp.roomCode);
                     setRoomName(resp.roomName);
                     setUserName(location.state.userName);
@@ -137,7 +138,7 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://3.91.52.183:5000/room/join", requestOptions)
+            fetch("http://localhost:5000/room/join", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message != "success") {
@@ -257,6 +258,7 @@ const SocketComponent = () => {
         }, 500);
     };
 
+
     
     const handleProgress = ({ playedSeconds }) => { //TODO: calculate the frame drop rate for each user metrics should look like (U1: droprate1,U2:droprate2, ....) - 
         const currentFrameTime = playedSeconds * 1000;
@@ -270,6 +272,21 @@ const SocketComponent = () => {
         }
         setLastFrameTime(currentFrameTime);
     };
+
+    const handleClick = async () => {
+        try {
+          const response = await fetch('http://localhost:5000/room/close-room', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ roomCode: roomCode })
+          });
+          const data = await response.json();
+        } catch (error) {
+          console.error('Error closing group:', error);
+        }
+      };
 
         
         // ...
@@ -287,6 +304,9 @@ const SocketComponent = () => {
             onProgress={handleProgress}
             />
             <p>{roomCode}</p>
+            <button onClick={handleClick}>
+            {'Close Group'}
+            </button>
         
       </div>
     );
