@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require("cors");
+const mongoose = require('mongoose');
 const socketIO = require("socket.io");
 const path = require('path');
 
 const app = express();
 const port = 5000;
+
 
 const server = app.listen(port, err => {
     console.log(`API listening on port ${port}.`);
@@ -19,6 +21,11 @@ app.use('/public', express.static('public'))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
+
+mongoose.connect("mongodb+srv://test:test@cluster0.k9hwucp.mongodb.net/?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        console.log("MongoDB connected.")
+    });
 
 // Route for blank HTML page
 app.get('/', (req, res) => {
