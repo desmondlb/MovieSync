@@ -1,6 +1,6 @@
 import React, { useRef, useContext, useState, useEffect } from 'react';
 import { SocketContext } from '../context/socket';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate} from 'react-router-dom';
 import {io} from 'socket.io-client';
 // import VideoPlayer from '../../components/VideoPlayer';
 import ReactPlayer from 'react-player';
@@ -22,6 +22,7 @@ const SocketComponent = () => {
     const [lastFrameTime, setLastFrameTime] = useState(null);
     const [frameDropRate, setFrameDropRate] = useState(null);
     const [latency, setLatency] = useState(null); //TODO
+    const navigate = useNavigate();
 
     
 
@@ -85,6 +86,7 @@ const SocketComponent = () => {
             setIsPlaying(false);
             setRoomCode("");
             setPeopleInParty(0);
+            navigate(-1);
         });
         // return () => {
         // socket.disconnect();
@@ -290,6 +292,7 @@ const SocketComponent = () => {
               // Success: room deleted
               console.log('Room deleted');
               socket.emit("deleteRoom", {message: "delete", roomCode: roomCode});
+              navigate(-1);
             } else {
               // Other error: network response was not ok
               throw new Error('Network response was not ok');
