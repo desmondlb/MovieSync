@@ -1,6 +1,4 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
-import SocketComponent from '../../components/SocketComponent';
 
 const Room = (props) => {
   // const location = useLocation();
