@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import VideoPlayer from '../../components/VideoPlayer';
 import SocketComponent from '../../components/SocketComponent';
 
 const Room = (props) => {
