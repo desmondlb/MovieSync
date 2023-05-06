@@ -308,7 +308,7 @@ const SocketComponent = () => {
     return (
         <div>
             <ReactPlayer
-            url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/Tears+of+Steel+-+Blender+VFX+Open+Movie(720p).mp4`}
+            url={`https://dws5t5eawmivf.cloudfront.net/Tears+of+Steel+-+Blender+VFX+Open+Movie(720p).mp4`}
             controls={true}
             ref={playerRef}
             playing={isPlaying}
