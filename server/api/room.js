@@ -1,15 +1,7 @@
 const router = require('express').Router();
-const Room = require('../models/Room')
+const Room = require('../models/Room');
 
 var global = {};
-
-// router.post('/create', (req, res) => {
-//     const { roomName, roomCode} = req.body
-
-//     global[roomCode] = {"roomName":roomName}
-
-//     res.send({message: "success", roomName: roomName, roomCode: roomCode})
-// });
 
 router.post('/create', (req, res) => {
     const { videoURL, roomName, roomCode } = req.body
