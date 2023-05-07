@@ -25,6 +25,7 @@ const SocketComponent = () => {
     const [buffering, setBuffering] = useState(false);
     const [bufferRate, setBufferRate] = useState(0);
     const [videoURL, setVideoURL] = useState("");
+    const [bitrate, setBitrate] = useState(0);
     
     // const server_ip = "34.202.237.67";
 
@@ -280,17 +281,11 @@ const SocketComponent = () => {
         setTimeout(() => {
             allowEmit = true
         }, 500);
-              /*METRICS MONITORING */
-        // playerRef.current.getInternalPlayer().addEventListener('loadedmetadata', () => {
-        //     console.log('Loaded metadata');
-        //     const videoElement = playerRef.current.getInternalPlayer();
-        //     console.log('Latency:', videoElement.currentTime - startTime);
-        //     setInterval(() => {
-        //     console.log('Frame drop:', videoElement.webkitDecodedFrameCount - videoElement.webkitDroppedFrameCount);
-        //     console.log('Bitrate:', videoElement.videoBitsPerSecond);
-        //     }, 1000);
-        // });
-      };
+        const quality = playerRef.current.getVideoPlaybackQuality();
+        setBitrate(quality.totalVideoFrames / quality.totalVideoFramesDuration * 1000);
+        console.log("bitrate is:", quality.totalVideoFrames / quality.totalVideoFramesDuration * 1000);
+        
+        };
     
     const handleReady = () => {
     // Set isReady to true when the player is ready
@@ -326,6 +321,11 @@ const SocketComponent = () => {
             //console.log("frameDropRate",frameDropRate)
         }
         setLastFrameTime(currentFrameTime);
+        const currentTime = playerRef.current.getCurrentTime();
+        const currentBytes = playerRef.current.getInternalPlayer().getVideoLoaded();
+        const currentBitrate = currentBytes * 8 / currentTime;
+        setBitrate(currentBitrate);
+        
     };
 
     const handleClick = async () => {
