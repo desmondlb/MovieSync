@@ -365,7 +365,8 @@ const SocketComponent = () => {
         const currentBitrate = Math.round(dataSizeDuringInterval / 1000);
 
         setBitrate(currentBitrate);
-        console.log("current bitrate:",currentBitrate);
+        saveBitRateLog();
+        saveBufferLog();
 
     };
 
@@ -422,7 +423,7 @@ const SocketComponent = () => {
                 setBuffering(false);
                 setBufferRate(bufferRate);
                 //console.log("bufferRate: ", bufferRate);
-                saveBufferLog();
+                //saveBufferLog();
                 setBufferStartTime(null);
             }}
             />
