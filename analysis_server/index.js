@@ -41,6 +41,20 @@ app.post('/bufferLog', (req, res) => {
   });
 });
 
+app.post('/bitRateLog', (req, res) => {
+  const { roomCode, userName, bitRate, timeStamp } = req.body;
+  const logData = `${timeStamp} | ${roomCode} | ${userName} | ${bitRate}\n`;
+
+  fs.appendFile('bitRateLog.txt', logData, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error writing to log file');
+    } else {
+      res.status(200).send('BitRate Log data saved successfully');
+    }
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
