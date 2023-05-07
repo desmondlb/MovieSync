@@ -23,6 +23,10 @@ const SocketComponent = () => {
     const [frameDropRate, setFrameDropRate] = useState(null);
     const [latency, setLatency] = useState(null); //TODO
     const navigate = useNavigate();
+    const [bufferStartTime, setBufferStartTime] = useState(0);
+    const [buffering, setBuffering] = useState(false);
+    const [bufferRate, setBufferRate] = useState(0);
+    
 
     
 
@@ -30,7 +34,7 @@ const SocketComponent = () => {
     const playerRef = useRef(null);
     let allowEmit = true;
     const socket = useContext(SocketContext);
-    // const socket = io('http://localhost:5000', {
+    // const socket = io('http://34.202.237.67:5000', {
     //     autoConnect: true
     //   }); // replace with your server URL
     
@@ -51,11 +55,12 @@ const SocketComponent = () => {
             setPeopleInParty(data.members);
         });
         socket.on('playerControlUpdate', (data) => {
-            console.log("Got message from server");
+            console.log("Got message from server",data);
+
             if(data.message == "play") {
 
                 // Check if the player is ready before calling the play method
-                    let resumeTime;
+                    let resumeTime=0;
                     if (!isPlaying && isFinite(data.context)) {
                         resumeTime = data.context;
                     }
@@ -111,7 +116,7 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://3.91.52.183:5000/room/create", requestOptions)
+            fetch("http://34.202.237.67:5000/room/create", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message == "success") {
@@ -145,7 +150,7 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://3.91.52.183:5000/room/join", requestOptions)
+            fetch("http://34.202.237.67:5000/room/join", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message != "success") {
@@ -177,7 +182,7 @@ const SocketComponent = () => {
         now.getUTCMilliseconds()
         );
 
-        fetch('http://3.91.52.183:3002/log', {
+        fetch('http://34.202.237.67:8000/log', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -210,8 +215,9 @@ const SocketComponent = () => {
     const handlePlay = () => {
         // Check if the player is ready before calling the play method
         let startTime = playerRef.current.getCurrentTime();
+        console.log("Im in handleplay")
         if (isReady) {
-          let resumeTime;
+          let resumeTime=0;
           if (!isPlaying && isFinite(startTime)) {
             resumeTime = startTime;
           }
@@ -270,18 +276,18 @@ const SocketComponent = () => {
     const handleProgress = ({ playedSeconds }) => { //TODO: calculate the frame drop rate for each user metrics should look like (U1: droprate1,U2:droprate2, ....) - 
         const currentFrameTime = playedSeconds * 1000;
         if (lastFrameTime !== null) {
-            console.log("currentFrameTime :",currentFrameTime,"lastFrameTime :",lastFrameTime)
+            //console.log("currentFrameTime :",currentFrameTime,"lastFrameTime :",lastFrameTime)
             const timeDiff = currentFrameTime - lastFrameTime;
             const expectedFrameTime = 1000 / 60; // the video is 30 fps 30 fps
             const frameDropRate = timeDiff / expectedFrameTime - 1;
             setFrameDropRate(frameDropRate);
-            console.log("frameDropRate",frameDropRate)
+            //console.log("frameDropRate",frameDropRate)
         }
         setLastFrameTime(currentFrameTime);
     };
 
     const handleClick = async () => {
-          const response = await fetch('http://3.91.52.183:5000/room/close-room', {
+          const response = await fetch('http://34.202.237.67:5000/room/close-room', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -319,7 +325,24 @@ const SocketComponent = () => {
             onProgress={handleProgress}
             onError={(e) => console.log('Error:', e)}
 
-            />
+            onBuffer={() => {
+                setPausedAt(playerRef.current.getCurrentTime());
+                //setIsPlaying(false);
+                setBuffering(true);
+                setBufferStartTime(Date.now());
+            }}
+            onBufferEnd={() => {
+                const bufferEndTime = Date.now();
+                const bufferTime = bufferEndTime - bufferStartTime;
+                const bufferedSeconds = bufferTime / 1000;
+                const bufferRate = bufferedSeconds / (playerRef.current.getDuration() - playerRef.current.getCurrentTime());
+                setBuffering(false);
+                setBufferRate(bufferRate);
+                //console.log("bufferRate: ", bufferRate);
+                setBufferStartTime(null);
+            }}
+        />
+        
             
             <p>{roomCode}</p>
             <button onClick={handleClick}>

@@ -30,7 +30,7 @@ const SocketComponent = () => {
     const playerRef = useRef(null);
     let allowEmit = true;
     const socket = useContext(SocketContext);
-    // const socket = io('http://localhost:5000', {
+    // const socket = io('http://34.202.237.67:5000', {
     //     autoConnect: true
     //   }); // replace with your server URL
     
