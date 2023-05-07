@@ -354,7 +354,7 @@ const SocketComponent = () => {
     //   url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/manifest.mpd`}
         // ...
     return (
-        <div>
+        <div style={{display: 'flex',flexDirection: 'column',alignItems: 'center', padding: '20px', backgroundColor: '#f7f7f7',borderRadius: '10px',}}>
             <ReactPlayer
             url={videoURL}
             controls={true}
@@ -384,11 +384,11 @@ const SocketComponent = () => {
                 saveBufferLog();
                 setBufferStartTime(null);
             }}
-        />
+            />
         
-            
-            <p>{roomCode}</p>
-            <button onClick={handleClick}>
+            <p style={{marginTop: '20px',padding: '10px',border: '1px solid black',borderRadius: '5px',fontWeight: 'bold',color: '#333'}} >
+              This is your room code: {roomCode}</p>
+            <button style={{marginTop: '20px',backgroundColor: '#4CAF50',color: 'white',padding: '10px 20px',borderRadius: '5px',border: 'none',cursor: 'pointer'}}onClick={handleClick}>
             {'Close Group'}
             </button>
         

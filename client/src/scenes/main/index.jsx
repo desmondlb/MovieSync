@@ -59,20 +59,33 @@ const Landing = () => {
   };
 
   return (
+    
     <div>
+  <header style={{backgroundColor: "#333", color: "#fff", padding: "20px", textAlign: "center" , marginBottom: "20px" }}>  
+    <h1>Welcome to Movie Sync</h1>
+	</header>
+  <p>Create a room!</p>
   <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={link} onChange={handleInputChange} placeholder="Enter URL"/>
   <br/>
   <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={userNameCreate} onChange={handleUserNameChangeRoomCreator} placeholder="Enter username" />
   <br/>
-  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={roomName} onChange={handleRoomNameChange} placeholder="Enter room name" />
+  <input  style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={roomName} onChange={handleRoomNameChange} placeholder="Enter room name" />
   <br/>
   <button style={{backgroundColor: "#4CAF50", color: "#fff", padding: "10px", border: "none"}} onClick={handleCreateRoomClick}>Create Room</button>
-  <br/><br/><br/><br/><br/><br/><br/>
-  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={userNameJoin} onChange={handleUserNameChangeJoin} placeholder="Enter username" />
+  <br/><br/><br/>
+  <p>Join a room!</p><br/>
+  <input id="username_join" style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={userNameJoin} onChange={handleUserNameChangeJoin} placeholder="Enter username" />
   <br/>
-  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={roomCode} onChange={handleRoomCodeChange} placeholder="Enter room code" />
+  <input id="roomname" style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={roomCode} onChange={handleRoomCodeChange} placeholder="Enter room code" />
   <br/>
   <button style={{backgroundColor: "#4CAF50", color: "#fff", padding: "10px", border: "none"}} onClick={handleJoinRoomClick}>Join Room</button>
+
+  <div style={{position: 'absolute',  bottom: 0,  left: '00%',  textAlign: 'left',  width: '1000px'}}>
+    <p>Some pre saved links to copy: <br/> 
+    https://dws5t5eawmivf.cloudfront.net/Tears+of+Steel+-+Blender+VFX+Open+Movie(720p).mp4 <br/>
+    https://dws5t5eawmivf.cloudfront.net/manifest.mpd<br/>
+    https://cs553moviesync.s3.us-east-2.amazonaws.com/Tears+of+Steel+-+Blender+VFX+Open+Movie(720p).mp4 <br/>
+    https://cs553moviesync.s3.us-east-2.amazonaws.com/manifest.mpd</p></div>
 </div>
 
   )
