@@ -281,10 +281,6 @@ const SocketComponent = () => {
         setTimeout(() => {
             allowEmit = true
         }, 500);
-        const quality = playerRef.current.getVideoPlaybackQuality();
-        setBitrate(quality.totalVideoFrames / quality.totalVideoFramesDuration * 1000);
-        console.log("bitrate is:", quality.totalVideoFrames / quality.totalVideoFramesDuration * 1000);
-        
         };
     
     const handleReady = () => {
@@ -310,7 +306,7 @@ const SocketComponent = () => {
 
 
     
-    const handleProgress = ({ playedSeconds }) => { //TODO: calculate the frame drop rate for each user metrics should look like (U1: droprate1,U2:droprate2, ....) - 
+    const handleProgress = ({ loaded,playedSeconds }) => { //TODO: calculate the frame drop rate for each user metrics should look like (U1: droprate1,U2:droprate2, ....) - 
         const currentFrameTime = playedSeconds * 1000;
         if (lastFrameTime !== null) {
             //console.log("currentFrameTime :",currentFrameTime,"lastFrameTime :",lastFrameTime)
@@ -321,11 +317,14 @@ const SocketComponent = () => {
             //console.log("frameDropRate",frameDropRate)
         }
         setLastFrameTime(currentFrameTime);
-        const currentTime = playerRef.current.getCurrentTime();
-        const currentBytes = playerRef.current.getInternalPlayer().getVideoLoaded();
-        const currentBitrate = currentBytes * 8 / currentTime;
+        const currentDataSize = Math.round(loaded * playerRef.current.getDuration() * 1000);
+        const prevDataSize = Math.round(loaded * (playerRef.current.getCurrentTime() - 1) * 1000);
+        const dataSizeDuringInterval = currentDataSize - prevDataSize;
+        const currentBitrate = Math.round(dataSizeDuringInterval / 1000);
+
         setBitrate(currentBitrate);
-        
+        console.log("current bitrate:",currentBitrate);
+
     };
 
     const handleClick = async () => {
