@@ -26,7 +26,7 @@ const SocketComponent = () => {
     const [bufferRate, setBufferRate] = useState(0);
     const [videoURL, setVideoURL] = useState("");
     
-    const server_ip = useContext(SocketContext);
+    const server_ip = "34.202.237.67";
 
     const playerRef = useRef(null);
     let allowEmit = true;

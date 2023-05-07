@@ -5,7 +5,8 @@ import { BrowserRouter as Router, Link, useNavigate } from 'react-router-dom';
 
 const Landing = () => {
   const [link, setLink] = useState("");
-  const [userName, setUserName] = useState("");
+  const [userNameJoin, setUserNameJoin] = useState("");
+  const [userNameCreate, setUserNameCreate] = useState("");
   const [roomName, setRoomName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const navigate = useNavigate();
@@ -14,8 +15,12 @@ const Landing = () => {
     setLink(event.target.value);
   };
 
-  const handleUserNameChange = (event) => {
-    setUserName(event.target.value);
+  const handleUserNameChangeJoin = (event) => {
+    setUserNameJoin(event.target.value);
+  };
+
+  const handleUserNameChangeRoomCreator = (event) => {
+    setUserNameCreate(event.target.value);
   };
 
   const handleRoomNameChange = (event) => {
@@ -30,7 +35,7 @@ const Landing = () => {
         // Collect the user inputs
         const data = {
             link: link,
-            userName: userName,
+            userName: userNameCreate,
             roomName: roomName
         };
 
@@ -45,7 +50,7 @@ const Landing = () => {
     // handle join room click here
     // Collect the user inputs
     const data = {
-        userName: userName,
+        userName: userNameJoin,
         roomCode: roomCode
     };
 
@@ -57,13 +62,13 @@ const Landing = () => {
     <div>
   <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={link} onChange={handleInputChange} placeholder="Enter URL"/>
   <br/>
-  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={userName} onChange={handleUserNameChange} placeholder="Enter username" />
+  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={userNameCreate} onChange={handleUserNameChangeRoomCreator} placeholder="Enter username" />
   <br/>
   <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={roomName} onChange={handleRoomNameChange} placeholder="Enter room name" />
   <br/>
   <button style={{backgroundColor: "#4CAF50", color: "#fff", padding: "10px", border: "none"}} onClick={handleCreateRoomClick}>Create Room</button>
   <br/><br/><br/><br/><br/><br/><br/>
-  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={userName} onChange={handleUserNameChange} placeholder="Enter username" />
+  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={userNameJoin} onChange={handleUserNameChangeJoin} placeholder="Enter username" />
   <br/>
   <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={roomCode} onChange={handleRoomCodeChange} placeholder="Enter room code" />
   <br/>
