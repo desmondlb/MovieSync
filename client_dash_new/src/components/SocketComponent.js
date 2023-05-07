@@ -1,5 +1,5 @@
 import React, { useRef, useContext, useState, useEffect } from 'react';
-import { SocketContext } from '../context/socket';
+import { SocketContext, server_ip} from '../context/socket';
 import { useLocation, useNavigate} from 'react-router-dom';
 import ReactPlayer from 'react-player';
 
@@ -26,11 +26,12 @@ const SocketComponent = () => {
     const [bufferRate, setBufferRate] = useState(0);
     const [videoURL, setVideoURL] = useState("");
     
-    const server_ip = "34.202.237.67";
+    // const server_ip = "34.202.237.67";
 
     const playerRef = useRef(null);
     let allowEmit = true;
     const socket = useContext(SocketContext);
+    // const server_ip = useContext(SocketContext);
     // const socket = io('http://34.202.237.67:5000', {
     //     autoConnect: true
     //   }); // replace with your server URL
