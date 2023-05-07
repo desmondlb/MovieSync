@@ -26,8 +26,7 @@ const SocketComponent = () => {
     const [bufferRate, setBufferRate] = useState(0);
     const [videoURL, setVideoURL] = useState("");
     
-    const server_ip = "34.202.237.67";
-
+    const server_ip = useContext(SocketContext);
 
     const playerRef = useRef(null);
     let allowEmit = true;
@@ -171,46 +170,46 @@ const SocketComponent = () => {
         
 
     // }, []);
-    const saveBufferLog = () => {
+    const saveBufferLog = async () => {
         const now = new Date();
         const utcTimestamp = Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate(),
-        now.getUTCHours(),
-        now.getUTCMinutes(),
-        now.getUTCSeconds(),
-        now.getUTCMilliseconds()
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          now.getUTCHours(),
+          now.getUTCMinutes(),
+          now.getUTCSeconds(),
+          now.getUTCMilliseconds()
         );
-
-        fetch("http://"+server_ip+":8000/bufferLog", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            roomCode: roomCode,
-            userName: userName,
-            bufferRate: bufferRate,
-            timeStamp: new Date(utcTimestamp).toISOString()
-          })
-        })
-        .then(response => {
-            if (response.status === 200) {
-              // Success: log data saved successfully
-              console.log('Buffer Log data saved successfully');
-            } else if (response.status === 500) {
-              // Server error: error writing to log file
-              console.error('Error writing to Buffer log file');
-            } else {
-              // Other error: network response was not ok
-              throw new Error('Network response was not ok');
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
+      
+        try {
+          const response = await fetch("http://" + server_ip + ":8000/bufferLog", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              roomCode: roomCode,
+              userName: userName,
+              bufferRate: bufferRate,
+              timeStamp: new Date(utcTimestamp).toISOString(),
+            }),
           });
-      }
+          if (response.status === 200) {
+            // Success: log data saved successfully
+            console.log("Buffer Log data saved successfully");
+          } else if (response.status === 500) {
+            // Server error: error writing to log file
+            console.error("Error writing to Buffer log file");
+          } else {
+            // Other error: network response was not ok
+            throw new Error("Network response was not ok");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+      
 
     const saveLogData = (action) => {
         const now = new Date();
