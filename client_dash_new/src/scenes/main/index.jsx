@@ -45,7 +45,6 @@ const Landing = () => {
     // handle join room click here
     // Collect the user inputs
     const data = {
-        link: link,
         userName: userName,
         roomCode: roomCode
     };
@@ -56,18 +55,21 @@ const Landing = () => {
 
   return (
     <div>
-      <input type="text" value={link} onChange={handleInputChange} placeholder="Enter URL"/>
-      <br/>
-      <input type="text" value={userName} onChange={handleUserNameChange} placeholder="Enter username" />
-      <br/>
-      <input type="text" value={roomName} onChange={handleRoomNameChange} placeholder="Enter room name" />
-      <br/>
-      <button onClick={handleCreateRoomClick}>Create Room</button>
-      <br/>
-      <input type="text" value={roomCode} onChange={handleRoomCodeChange} placeholder="Enter room code" />
-      <br/>
-      <button onClick={handleJoinRoomClick}>Join Room</button>
-    </div>
+  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={link} onChange={handleInputChange} placeholder="Enter URL"/>
+  <br/>
+  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={userName} onChange={handleUserNameChange} placeholder="Enter username" />
+  <br/>
+  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={roomName} onChange={handleRoomNameChange} placeholder="Enter room name" />
+  <br/>
+  <button style={{backgroundColor: "#4CAF50", color: "#fff", padding: "10px", border: "none"}} onClick={handleCreateRoomClick}>Create Room</button>
+  <br/><br/><br/><br/><br/><br/><br/>
+  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={userName} onChange={handleUserNameChange} placeholder="Enter username" />
+  <br/>
+  <input style={{border: "1px solid #ccc", padding: "10px"}} type="text" value={roomCode} onChange={handleRoomCodeChange} placeholder="Enter room code" />
+  <br/>
+  <button style={{backgroundColor: "#4CAF50", color: "#fff", padding: "10px", border: "none"}} onClick={handleJoinRoomClick}>Join Room</button>
+</div>
+
   )
 };
 

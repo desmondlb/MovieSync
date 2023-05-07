@@ -63,6 +63,10 @@ const Landing = () => {
       <input type="text" value={roomName} onChange={handleRoomNameChange} placeholder="Enter room name" />
       <br/>
       <button onClick={handleCreateRoomClick}>Create Room</button>
+      <br/><br/><br/><br/><br/><br/><br/>
+      <input type="text" value={link} onChange={handleInputChange} placeholder="Enter URL"/>
+      <br/>
+      <input type="text" value={userName} onChange={handleUserNameChange} placeholder="Enter username" />
       <br/>
       <input type="text" value={roomCode} onChange={handleRoomCodeChange} placeholder="Enter room code" />
       <br/>

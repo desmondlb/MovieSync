@@ -12,13 +12,14 @@ var global = {};
 // });
 
 router.post('/create', (req, res) => {
-    const { roomName, roomCode } = req.body
+    const { videoURL, roomName, roomCode } = req.body
     let newRoom = Room({
+        videoURL,
         roomName,
         roomCode
     })
     newRoom.save()
-    res.send({message: "success", roomName: roomName, roomCode: roomCode})
+    res.send({message: "success", roomName: roomName, roomCode: roomCode, videoURL: videoURL})
 });
 
 // Define a route for clearing the MongoDB collection
@@ -63,6 +64,7 @@ router.post('/join', (req, res) => {
                 {
                     roomCode,
                     roomName: room.roomName,
+                    videoURL: room.videoURL,
                     message: "success"
                 }
             )

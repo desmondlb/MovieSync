@@ -1,8 +1,6 @@
 import React, { useRef, useContext, useState, useEffect } from 'react';
 import { SocketContext } from '../context/socket';
 import { useLocation, useNavigate} from 'react-router-dom';
-import {io} from 'socket.io-client';
-// import VideoPlayer from '../../components/VideoPlayer';
 import ReactPlayer from 'react-player';
 
 function randomString(length, chars) {
@@ -26,11 +24,11 @@ const SocketComponent = () => {
     const [bufferStartTime, setBufferStartTime] = useState(0);
     const [buffering, setBuffering] = useState(false);
     const [bufferRate, setBufferRate] = useState(0);
+    const [videoURL, setVideoURL] = useState("");
     
+    const server_ip = "34.202.237.67";
 
-    
 
-    
     const playerRef = useRef(null);
     let allowEmit = true;
     const socket = useContext(SocketContext);
@@ -55,7 +53,7 @@ const SocketComponent = () => {
             setPeopleInParty(data.members);
         });
         socket.on('playerControlUpdate', (data) => {
-            console.log("Got message from server",data);
+            // console.log("Got message from server",data);
 
             if(data.message == "play") {
 
@@ -74,7 +72,7 @@ const SocketComponent = () => {
                     setIsPlaying(true);
                     setLastFrameTime(playerRef.current.getCurrentTime() * 1000);
 
-                console.log(playerRef.current);
+                // console.log(playerRef.current);
             }
             if(data.message == "pause") {
                 const pausedAt = data.context;
@@ -105,6 +103,7 @@ const SocketComponent = () => {
             myHeaders.append("Content-Type", "application/json");
 
             var raw = JSON.stringify({
+                "videoURL": location.state.link,
                 "roomName": location.state.roomName,
                 "roomCode": randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
             });
@@ -116,7 +115,7 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://34.202.237.67:5000/room/create", requestOptions)
+            fetch("http://"+server_ip+":5000/room/create", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message == "success") {
@@ -124,6 +123,7 @@ const SocketComponent = () => {
                     console.log(resp);
                     setRoomCode(resp.roomCode);
                     setRoomName(resp.roomName);
+                    setVideoURL(resp.videoURL);
                     setUserName(location.state.userName);
 
                 }
@@ -150,7 +150,7 @@ const SocketComponent = () => {
                 redirect: 'follow'
             };
 
-            fetch("http://34.202.237.67:5000/room/join", requestOptions)
+            fetch("http://"+server_ip+":5000/room/join", requestOptions)
             .then( async (result) => {
                 const resp = await result.json()
                 if(resp.message != "success") {
@@ -159,6 +159,7 @@ const SocketComponent = () => {
                     socket.emit('new-user-joined', { name: location.state.userName, roomCode: resp.roomCode })
                     setRoomCode(resp.roomCode);
                     setRoomName(resp.roomName);
+                    setVideoURL(resp.videoURL);
                 }   
             })
             .catch(error => console.log('error', error));
@@ -170,6 +171,47 @@ const SocketComponent = () => {
         
 
     // }, []);
+    const saveBufferLog = () => {
+        const now = new Date();
+        const utcTimestamp = Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        now.getUTCMinutes(),
+        now.getUTCSeconds(),
+        now.getUTCMilliseconds()
+        );
+
+        fetch("http://"+server_ip+":8000/bufferLog", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            roomCode: roomCode,
+            userName: userName,
+            bufferRate: bufferRate,
+            timeStamp: new Date(utcTimestamp).toISOString()
+          })
+        })
+        .then(response => {
+            if (response.status === 200) {
+              // Success: log data saved successfully
+              console.log('Buffer Log data saved successfully');
+            } else if (response.status === 500) {
+              // Server error: error writing to log file
+              console.error('Error writing to Buffer log file');
+            } else {
+              // Other error: network response was not ok
+              throw new Error('Network response was not ok');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
     const saveLogData = (action) => {
         const now = new Date();
         const utcTimestamp = Date.UTC(
@@ -182,7 +224,7 @@ const SocketComponent = () => {
         now.getUTCMilliseconds()
         );
 
-        fetch('http://34.202.237.67:8000/log', {
+        fetch("http://"+server_ip+":8000/log", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -215,7 +257,7 @@ const SocketComponent = () => {
     const handlePlay = () => {
         // Check if the player is ready before calling the play method
         let startTime = playerRef.current.getCurrentTime();
-        console.log("Im in handleplay")
+        // console.log("Im in handleplay")
         if (isReady) {
           let resumeTime=0;
           if (!isPlaying && isFinite(startTime)) {
@@ -228,10 +270,10 @@ const SocketComponent = () => {
           playerRef.current.seekTo(resumeTime);
           setPausedAt(null);
         }
-        console.log(playerRef.current);
+        // console.log(playerRef.current);
         setIsPlaying(true);
         if(allowEmit == true){
-            console.log(socket);
+            // console.log(socket);
             socket.emit("playerControl", {message: "play", context: startTime, roomCode: roomCode});
             saveLogData("play");
         } 
@@ -239,15 +281,15 @@ const SocketComponent = () => {
             allowEmit = true
         }, 500);
               /*METRICS MONITORING */
-        playerRef.current.getInternalPlayer().addEventListener('loadedmetadata', () => {
-            console.log('Loaded metadata');
-            const videoElement = playerRef.current.getInternalPlayer();
-            console.log('Latency:', videoElement.currentTime - startTime);
-            setInterval(() => {
-            console.log('Frame drop:', videoElement.webkitDecodedFrameCount - videoElement.webkitDroppedFrameCount);
-            console.log('Bitrate:', videoElement.videoBitsPerSecond);
-            }, 1000);
-        });
+        // playerRef.current.getInternalPlayer().addEventListener('loadedmetadata', () => {
+        //     console.log('Loaded metadata');
+        //     const videoElement = playerRef.current.getInternalPlayer();
+        //     console.log('Latency:', videoElement.currentTime - startTime);
+        //     setInterval(() => {
+        //     console.log('Frame drop:', videoElement.webkitDecodedFrameCount - videoElement.webkitDroppedFrameCount);
+        //     console.log('Bitrate:', videoElement.videoBitsPerSecond);
+        //     }, 1000);
+        // });
       };
     
     const handleReady = () => {
@@ -287,7 +329,7 @@ const SocketComponent = () => {
     };
 
     const handleClick = async () => {
-          const response = await fetch('http://34.202.237.67:5000/room/close-room', {
+          const response = await fetch("http://"+server_ip+":5000/room/close-room", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -309,12 +351,12 @@ const SocketComponent = () => {
           })
       };
 
-        
+    //   url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/manifest.mpd`}
         // ...
     return (
         <div>
             <ReactPlayer
-            url={`https://cs553moviesync.s3.us-east-2.amazonaws.com/manifest.mpd`}
+            url={videoURL}
             controls={true}
             ref={playerRef}
             playing={isPlaying}
@@ -339,6 +381,7 @@ const SocketComponent = () => {
                 setBuffering(false);
                 setBufferRate(bufferRate);
                 //console.log("bufferRate: ", bufferRate);
+                saveBufferLog();
                 setBufferStartTime(null);
             }}
         />

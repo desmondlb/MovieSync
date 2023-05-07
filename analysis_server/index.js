@@ -27,6 +27,20 @@ app.post('/log', (req, res) => {
   });
 });
 
+app.post('/bufferLog', (req, res) => {
+  const { roomCode, userName, bufferRate, timeStamp } = req.body;
+  const logData = `${timeStamp} | ${roomCode} | ${userName} | ${bufferRate}\n`;
+
+  fs.appendFile('bufferLog.txt', logData, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error writing to log file');
+    } else {
+      res.status(200).send('Buffer Log data saved successfully');
+    }
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
