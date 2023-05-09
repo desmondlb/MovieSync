@@ -18,9 +18,9 @@ A platform to watch movies with your friends! Check out the live project : [http
         - Selenium (mimic the behaviour of mulitple users)
     - Metrics Analysis
         - Python3 (for crunching the numbers)
-- Movie files in mp4 format and chucks created for MPEG_DASH Streaming are stored on AWS S3.
+- Movie files in mp4 format and chucks created for MPEG_DASH Streaming are stored on** AWS S3.**
 - We use **AWS CloudFront** to stream them seamlessly across the globe.
-- We have hosted the server on AWS S3
+- We have hosted the server on **AWS EC2**
 
 ## Architecture
  <img src="https://user-images.githubusercontent.com/31558571/236909678-9ca4de20-b725-4c10-8b8f-879acccda889.png" width="50%" height="50%">
