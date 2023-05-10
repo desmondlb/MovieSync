@@ -26,7 +26,7 @@ A platform to watch movies with your friends! Check out the live project : [http
  <img src="https://user-images.githubusercontent.com/31558571/236909678-9ca4de20-b725-4c10-8b8f-879acccda889.png" width="50%" height="50%">
 
 ## How to run?
-
+### Deploying the software :
 1. Depending on if you want to deploy this project locally or on a server like AWS EC2 you must set your ip in the `/client/src/context/socket.js` If you want to deploy on your local machine, change the server_ip to `localhost`. Use the public IP of your server if deploying elsewhere
 2. Clone this repository
 3. Navigate to individual folders for client, server, analysis_server and run `npm i` to install npm dependencies
@@ -34,7 +34,12 @@ A platform to watch movies with your friends! Check out the live project : [http
 5. Go to server folder and start it using `node server.js`or `npm run start`
 6. Then navigate to client and then run `npm run start` to start the client
 
-You can choose whichever link you want as the url and create a room and then open another instance of the client in the browser and join the room using the room code that is displayed on the screen of the videoplayer.
+### How to create and join a room ? 
+7. Go to 34.202.237.67:3000 or localhost:3000 and create a room by entering any of the links on the homepage in the URL box, your username, and room name. You will see a roomcode generated. 
+8. On another tab/device login by using the 2nd form on the landing page, enter the room code along woth your username this time.
+9. A video player should load on the second user's screen, now you can play the video using any of the controls.
+10. The performance metrics will be sent to the analytics server on PORT 8000 on the same host you deploed the software.  
+
 
 ## How to test? 
 
